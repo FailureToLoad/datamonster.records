@@ -1,0 +1,27 @@
+name: records
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t datamonster.records:build --build-arg password=${{ secrets.RECORDS_PASS }} --build-arg user=${{ secrets.RECORDS_USER }} .
+
+      - name: Run container
+        run: docker run --name=datamonster.records -d datamonster.records:build
+
+      - name: Commit seeded image as latest
+        run: docker commit datamonster.records ghcr.io/failuretoload/datamonster.records:latest
+
+      - name: Log in to GHCR
+        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ secrets.CR_USER }} --password-stdin
+
+      - name: Push latest image
+        run: docker push ghcr.io/failuretoload/datamonster.records:latest

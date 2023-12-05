@@ -1,0 +1,9 @@
+FROM postgres
+ARG SA_PASSWORD
+ARG APP_USER_PASS
+ENV POSTGRES_PASSWORD=${SA_PASSWORD:-Password1}
+ENV POSTGRES_USER=admin
+ENV POSTGRES_DB=records
+ENV APPUSER_PASS=${APP_USER_PASS:-Password1}
+
+COPY init-db.sh /docker-entrypoint-initdb.d/
