@@ -2,10 +2,11 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE TABLE IF NOT EXISTS settlement
+    CREATE SCHEMA IF NOT EXISTS campaign;
+    CREATE TABLE IF NOT EXISTS campaign.settlement
     (
         id SERIAL,
-        owner character varying(128) NOT NULL,
+        owner integer NOT NULL,
         name character varying(50) COLLATE pg_catalog."default" NOT NULL,
         survival_limit smallint DEFAULT 0,
         departing_survival smallint DEFAULT 0,
@@ -13,8 +14,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         year smallint DEFAULT 0,
         CONSTRAINT settlement_pkey PRIMARY KEY (id)
     );
-
-    CREATE TABLE IF NOT EXISTS survivor
+    CREATE TABLE IF NOT EXISTS campaign.survivor
     (
         id SERIAL,
         settlement integer NOT NULL,
@@ -36,12 +36,25 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         CONSTRAINT survivor_pkey PRIMARY KEY (id),
         CONSTRAINT fk_settlement_id 
             FOREIGN KEY (settlement)
-                REFERENCES settlement (id)
+                REFERENCES campaign.settlement (id)
                 ON DELETE CASCADE
     );
 
-    CREATE USER appuser WITH PASSWORD '$APPUSER_PASS';
-    GRANT USAGE ON SCHEMA public TO appuser;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO appuser;
-    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO appuser;
+    CREATE USER app WITH PASSWORD '$APPUSER_PASS';
+    GRANT USAGE ON SCHEMA campaign TO app;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA campaign TO app;
+    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA campaign TO app;
+
+    CREATE SCHEMA IF NOT EXISTS private;
+    CREATE TABLE IF NOT EXISTS private.user(
+        id SERIAL,
+        username character varying(50) COLLATE pg_catalog."default" NOT NULL,
+        hash bytea NOT NULL,
+        CONSTRAINT user_pkey PRIMARY KEY (id)
+    );
+    CREATE USER pii WITH PASSWORD '$PII_PASS';
+    GRANT USAGE ON SCHEMA private TO pii;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA private TO pii;
+    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA private TO pii;
+
 EOSQL
