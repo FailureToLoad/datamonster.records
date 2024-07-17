@@ -6,7 +6,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     CREATE TABLE IF NOT EXISTS campaign.settlement
     (
         id SERIAL,
-        owner integer NOT NULL,
+        owner character varying(50) NOT NULL,
         name character varying(50) COLLATE pg_catalog."default" NOT NULL,
         survival_limit smallint DEFAULT 0,
         departing_survival smallint DEFAULT 0,
@@ -16,12 +16,15 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     );
     CREATE TABLE IF NOT EXISTS campaign.survivor
     (
-        id SERIAL,
+        id SERIAL PRIMARY KEY,
         settlement integer NOT NULL,
-        name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+        name VARCHAR(50) COLLATE pg_catalog."default" NOT NULL,
+        gender character(1) COLLATE pg_catalog."default",
         birth smallint NOT NULL DEFAULT 0,
         huntxp smallint NOT NULL DEFAULT 0,
         survival smallint NOT NULL DEFAULT 1,
+        courage smallint NOT NULL DEFAULT 0,
+        understanding smallint NOT NULL DEFAULT 0,
         movement smallint NOT NULL DEFAULT 5,
         accuracy smallint NOT NULL DEFAULT 0,
         strength smallint NOT NULL DEFAULT 0,
@@ -32,8 +35,8 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
         systemic_pressure smallint NOT NULL DEFAULT 0,
         torment smallint NOT NULL DEFAULT 0,
         lumi smallint NOT NULL DEFAULT 0,
-        gender character(1) COLLATE pg_catalog."default",
-        CONSTRAINT survivor_pkey PRIMARY KEY (id),
+        status VARCHAR(50),
+        UNIQUE (settlement, name),
         CONSTRAINT fk_settlement_id 
             FOREIGN KEY (settlement)
                 REFERENCES campaign.settlement (id)
@@ -44,17 +47,5 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     GRANT USAGE ON SCHEMA campaign TO app;
     GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA campaign TO app;
     GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA campaign TO app;
-
-    CREATE SCHEMA IF NOT EXISTS private;
-    CREATE TABLE IF NOT EXISTS private.user(
-        id SERIAL,
-        username character varying(50) COLLATE pg_catalog."default" NOT NULL,
-        hash bytea NOT NULL,
-        CONSTRAINT user_pkey PRIMARY KEY (id)
-    );
-    CREATE USER pii WITH PASSWORD '$PII_PASS';
-    GRANT USAGE ON SCHEMA private TO pii;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA private TO pii;
-    GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA private TO pii;
 
 EOSQL
