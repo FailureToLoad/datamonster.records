@@ -3,11 +3,9 @@
 This repo uses a Makefile to build the image and run the container.  
 
 `make build` will build the image.  
-`make run` will run the container.
+`make run` will run the container, mapping is to `localhost:8070`
 
-The run command also maps the container to `loalhost:8070`.  
-
-The init-db.sh script sets up all the tables and users.  
+The [init-db](https://github.com/FailureToLoad/datamonster.records/blob/34910d6a896477cfcd15ab6dfa01145183c1feff/init-db.sh) script sets up all the tables and users.  
 
 ## Related Projects
  
