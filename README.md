@@ -9,5 +9,5 @@ The [init-db](https://github.com/FailureToLoad/datamonster.records/blob/34910d6a
 
 ## Related Projects
  
- [datamonster.api](https://github.com/FailureToLoad/datamonster.records) - The api that datamonster.web communicates against  
+ [datamonster.api](https://github.com/FailureToLoad/datamonster.api) - The api that datamonster.web communicates against  
  [datamonster.web](https://github.com/FailureToLoad/datamonster.web) - A NextJS site which utilizes datamonster.api for critical logic and data persistence  
