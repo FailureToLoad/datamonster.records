@@ -11,5 +11,5 @@ The init-db.sh script sets up all the tables and users.
 
 ## Related Projects
  
- [datamonster.api](https://github.com/FailureToLoad/datamonster.records) - The api that datamonster.web communicates against
- [datamonster.web](https://github.com/FailureToLoad/datamonster.web) - A NextJS site which utilizes datamonster.api for critical logic and data persistence 
+ [datamonster.api](https://github.com/FailureToLoad/datamonster.records) - The api that datamonster.web communicates against  
+ [datamonster.web](https://github.com/FailureToLoad/datamonster.web) - A NextJS site which utilizes datamonster.api for critical logic and data persistence  
